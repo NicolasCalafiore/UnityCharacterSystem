@@ -1,55 +1,64 @@
-﻿using Assets.Main.Scripts.ActivitySystem.Activities.Core;
-using Assets.Main.Scripts.ActivitySystem.Missions.Missions;
-using Assets.Main.Scripts.ActivitySystem.Tasks.Tasks.Tasks;
-using System;
+﻿// Assets/Main/Scripts/ActivitySystem/Activities/Activities/Wander.cs
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
+using Assets.Main.Scripts.ActivitySystem.Activities.Core;
+using Assets.Main.Scripts.ActivitySystem.Tasks.Tasks.Tasks;
 
 namespace Assets.Main.Scripts.ActivitySystem.Activities.Activities
 {
     internal class Wander : IActivity
     {
-        public List<ActivityTaskContainer> tasksToDoInOrder => new List<ActivityTaskContainer>();
+        public List<ActivityTaskContainer> tasksToDoInOrder { get; } = new List<ActivityTaskContainer>();
         public bool IsCompleted { get; set; } = false;
         public bool isInProgress { get; set; } = false;
         public bool isStarted { get; set; } = false;
 
-
-        public Wander() {
- 
-        }
-
         public void Start()
         {
-            ActivityTaskContainer ATC = new ActivityTaskContainer();
-            Wandering W = new Wandering();
-            ATC.AddStructuredTask(W);
+            if (isStarted) return;
+            isStarted = true;
+            isInProgress = true;
 
-            tasksToDoInOrder.Add(ATC);
+            // We only have one "wander" container in this example
+            var container = new ActivityTaskContainer();
+            // add a Wandering‐task‐structure
+            container.StructuredTasks.Add(new Wandering());
+            tasksToDoInOrder.Add(container);
 
-            tasksToDoInOrder[0].Start();
+            container.Start();
         }
+
         public void Tick(GameObject charObj)
         {
-            Debug.Log("Wander Tick");
-            tasksToDoInOrder[0].Tick(charObj);
-        }
+            if (!isStarted) Start();
+            if (IsCompleted) return;
 
+            var container = tasksToDoInOrder[0];
+            container.Tick(charObj);
+
+            if (container.IsCompleted)
+            {
+                tasksToDoInOrder.RemoveAt(0);
+                if (tasksToDoInOrder.Count == 0)
+                {
+                    IsCompleted = true;
+                    isInProgress = false;
+                }
+            }
+        }
 
         public bool StartNextTask()
         {
-            tasksToDoInOrder.RemoveAt(0);
-            if (tasksToDoInOrder.Count < 0)
+            if (tasksToDoInOrder.Count > 0)
+                tasksToDoInOrder.RemoveAt(0);
+
+            if (tasksToDoInOrder.Count == 0)
             {
                 IsCompleted = true;
                 return false;
             }
-            return false;
+
+            return true;
         }
-
-
     }
 }

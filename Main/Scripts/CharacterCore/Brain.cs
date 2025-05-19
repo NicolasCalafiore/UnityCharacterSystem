@@ -1,40 +1,34 @@
-using Assets.Main.Scripts.ActivitySystem.Activities.Activities;
+// Assets/Main/Scripts/CharacterCore/Brain.cs
 using Assets.Main.Scripts.ActivitySystem.Activities.Core;
+using Assets.Main.Scripts.ActivitySystem.Activities.Activities;
 using UnityEngine;
 
 public class Brain
 {
     IActivity curr_activity = null;
-    int curr_tick = 0;
-    int ticks_per_activity = 2; // How many ticks before the activity is done
-
-    public Brain(){}
 
     public void BrainTick(GameObject charObj)
     {
-        if(Character.isDebug)
-            Debug.Log("Brain Tick");
-
-        curr_tick++;
-
-        if (curr_activity == null)
+        // if we have no activity or it's done, pick a new one
+        if (curr_activity == null || curr_activity.IsCompleted)
             SetActivity(charObj);
 
-        if (curr_tick % ticks_per_activity == 0 && curr_activity != null)
-            curr_activity.Tick(charObj);
+        // ensure it's started
+        if (!curr_activity.isStarted)
+            curr_activity.Start();
 
- 
-
+        // tick the current activity
+        curr_activity.Tick(charObj);
     }
 
     public void SetActivity(GameObject charObj)
     {
-        if(Calendar.hours > 1)
-            curr_activity = new Wander();
-
-        charObj.GetComponent<Character>().ActivityName = curr_activity.GetActivityName();
-
+        curr_activity = new Wander();
+        Character c = charObj.GetComponent<Character>();
+        c.ActivityName = curr_activity.GetActivityName();
+        curr_activity.IsCompleted = false;
+        curr_activity.isInProgress = false;
+        curr_activity.isStarted = false;
         curr_activity.Start();
     }
-
 }

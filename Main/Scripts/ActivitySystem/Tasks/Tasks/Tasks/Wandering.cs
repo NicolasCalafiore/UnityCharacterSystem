@@ -1,67 +1,61 @@
-﻿using Assets.Main.Scripts.ActivitySystem.Missions.Core;
-using Assets.Main.Scripts.ActivitySystem.Missions.Missions;
-using System;
+﻿// Assets/Main/Scripts/ActivitySystem/Tasks/Tasks/Tasks/Wandering.cs
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.AI;
+using Assets.Main.Scripts.ActivitySystem.Missions.Core;
+using Assets.Main.Scripts.ActivitySystem.Missions.Missions;
 
 namespace Assets.Main.Scripts.ActivitySystem.Tasks.Tasks.Tasks
 {
-    internal class Wandering : ILinearTask
+    internal class Wandering : IActivityTaskStructure
     {
-        public List<IMission> MissionsToDoInOrder { get; set; } = new List<IMission>();
-        public bool IsCompleted { get; set; }
-        public bool IsInProgress { get; set; }
-        public bool IsStarted { get; set; }
-        public bool MissionCompleted { get; set; } = false;
-        public bool MissionStarted { get; set; } = false;
+        public List<IMission> MissionsToDoInOrder { get; } = new List<IMission>();
+        public bool IsCompleted { get; set; } = false;
+        public bool IsInProgress { get; set; } = false;
+        public bool IsStarted { get; set; } = false;
+
         public bool Completed() => IsCompleted;
         public bool Started() => IsStarted;
-        public bool InProgress() => IsInProgress; 
-
-        public Wandering()
-        {
-            MissionsToDoInOrder.Add(new WalkToRandom(5, 5));
-        }
+        public bool InProgress() => IsInProgress;
 
         public void Start()
         {
+            if (IsStarted) return;
             IsStarted = true;
             IsInProgress = true;
-            IsCompleted = false;
+
+            // for example: two random‐walk missions
+            // you can parameterize ranges however you like
+            var agent = GameObject.FindObjectOfType<NavMeshAgent>();
+            MissionsToDoInOrder.Add(new WalkToRandom(-10, 10, -10, 10, agent));
+            MissionsToDoInOrder.Add(new WalkToRandom(-5, 5, -5, 5, agent));
+
+            // kick off the first mission
+            MissionsToDoInOrder[0].StartMission(agent.gameObject);
         }
 
         public void Tick(GameObject charObj)
         {
-            Debug.Log("Wandering Tick");
-            if (!IsStarted || IsCompleted)
-                return;
+            if (!IsStarted) Start();
+            if (IsCompleted) return;
 
-            if ((MissionCompleted || !MissionStarted) && MissionsToDoInOrder.Count != 0)
-                MissionsToDoInOrder[0].StartMission(charObj);
+            var current = MissionsToDoInOrder[0];
+            current.Tick(charObj);
 
-            if (MissionsToDoInOrder[0].isMissionCompleted(charObj))
+            if (current.isMissionCompleted(charObj))
             {
-                MissionCompleted = true;
                 MissionsToDoInOrder.RemoveAt(0);
-                MissionStarted = false;
-            }
 
-            if (MissionsToDoInOrder.Count == 0)
-            {
-                IsCompleted = true;
-                IsInProgress = false;
-                IsStarted = false;
+                if (MissionsToDoInOrder.Count > 0)
+                    MissionsToDoInOrder[0].StartMission(charObj);
+                else
+                {
+                    IsCompleted = true;
+                    IsInProgress = false;
+                }
             }
-
         }
 
-        public void CheckProgress()
-        {
-            // Logic for checking progress  
-        }
-
+        public void CheckProgress() { /* optional */ }
     }
 }
