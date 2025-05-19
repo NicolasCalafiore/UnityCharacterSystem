@@ -4,10 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Assets.Main.Scripts.ActivitySystem.Tasks.Tasks
+namespace Assets.Main.Scripts.ActivitySystem.Schedule
 {
-    internal class CycleTask
+    internal class Schedule
     {
-
     }
 }

@@ -4,37 +4,37 @@ using UnityEngine;
 
 public class Brain
 {
-    ICharacterActivity curr_activity = null;
+    IActivity curr_activity = null;
     int curr_tick = 0;
-    int ticks_per_activity = 5; // How many ticks before the activity is done
+    int ticks_per_activity = 2; // How many ticks before the activity is done
 
     public Brain(){}
 
-    public void BrainTick(Character character)
+    public void BrainTick(GameObject charObj)
     {
+        if(Character.isDebug)
+            Debug.Log("Brain Tick");
 
         curr_tick++;
-        if (curr_tick >= ticks_per_activity)
-            curr_activity.ActivityTick();
 
         if (curr_activity == null)
-            SetActivity(character);
+            SetActivity(charObj);
+
+        if (curr_tick % ticks_per_activity == 0 && curr_activity != null)
+            curr_activity.Tick(charObj);
+
+ 
 
     }
 
-    public void ActivityTick(ICharacterActivity activity)
-    {
-        activity.Tick();
-    }
-
-    public void SetActivity(Character character)
+    public void SetActivity(GameObject charObj)
     {
         if(Calendar.hours > 1)
-            curr_activity = new Freetime();
+            curr_activity = new Wander();
 
-        character.ActivityName = curr_activity.GetActivityName();
+        charObj.GetComponent<Character>().ActivityName = curr_activity.GetActivityName();
 
-
+        curr_activity.Start();
     }
 
 }
