@@ -7,7 +7,7 @@ using Assets.Main.Scripts.ActivitySystem.Missions.Missions;
 
 namespace Assets.Main.Scripts.ActivitySystem.Tasks.Tasks.Tasks
 {
-    internal class Wandering : IActivityTaskStructure
+    internal class Wandering : IMissionSequence
     {
         public List<IMission> MissionsToDoInOrder { get; } = new List<IMission>();
         public bool IsCompleted { get; set; } = false;

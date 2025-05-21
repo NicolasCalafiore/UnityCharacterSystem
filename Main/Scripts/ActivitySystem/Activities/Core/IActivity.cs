@@ -9,15 +9,13 @@ namespace Assets.Main.Scripts.ActivitySystem.Activities.Core
 {
     public interface IActivity
     {
-        List<ActivityTaskContainer> tasksToDoInOrder { get; }
+        List<RoutineExecutor> tasksToDoInOrder { get; }
         bool IsCompleted { get; set; }
         bool isInProgress { get; set; }
         bool isStarted { get; set; }
 
         public void Start();
         public void Tick(GameObject charObj);
-
-        public bool StartNextTask();
 
         public string GetActivityName()
         {

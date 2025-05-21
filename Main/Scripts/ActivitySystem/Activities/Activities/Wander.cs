@@ -8,7 +8,7 @@ namespace Assets.Main.Scripts.ActivitySystem.Activities.Activities
 {
     internal class Wander : IActivity
     {
-        public List<ActivityTaskContainer> tasksToDoInOrder { get; } = new List<ActivityTaskContainer>();
+        public List<RoutineExecutor> tasksToDoInOrder { get; } = new List<RoutineExecutor>();
         public bool IsCompleted { get; set; } = false;
         public bool isInProgress { get; set; } = false;
         public bool isStarted { get; set; } = false;
@@ -19,10 +19,9 @@ namespace Assets.Main.Scripts.ActivitySystem.Activities.Activities
             isStarted = true;
             isInProgress = true;
 
-            // We only have one "wander" container in this example
-            var container = new ActivityTaskContainer();
-            // add a Wandering‐task‐structure
-            container.StructuredTasks.Add(new Wandering());
+            var container = new RoutineExecutor();
+
+            container.MissionSequences.Add(new Wandering());
             tasksToDoInOrder.Add(container);
 
             container.Start();
@@ -45,20 +44,6 @@ namespace Assets.Main.Scripts.ActivitySystem.Activities.Activities
                     isInProgress = false;
                 }
             }
-        }
-
-        public bool StartNextTask()
-        {
-            if (tasksToDoInOrder.Count > 0)
-                tasksToDoInOrder.RemoveAt(0);
-
-            if (tasksToDoInOrder.Count == 0)
-            {
-                IsCompleted = true;
-                return false;
-            }
-
-            return true;
         }
     }
 }

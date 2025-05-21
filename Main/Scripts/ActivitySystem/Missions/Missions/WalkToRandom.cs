@@ -14,7 +14,6 @@ namespace Assets.Main.Scripts.ActivitySystem.Missions.Missions
 
         public bool Completed { get; set; } = false;
         public bool InProgress { get; set; } = false;
-        public bool missionFailed { get; set; } = false;
 
         public WalkToRandom(int minX, int maxX, int minZ, int maxZ, NavMeshAgent agent)
         {
@@ -55,14 +54,7 @@ namespace Assets.Main.Scripts.ActivitySystem.Missions.Missions
 
         public void Tick(GameObject charObj)
         {
-            // NavMeshAgent drives itself—you could add animation here
-        }
-
-        public float CheckProgress(GameObject charObj)
-        {
-            if (Completed) return 1f;
-            float remaining = Vector3.Distance(charObj.transform.position, destination);
-            return Mathf.Clamp01(1f - (remaining / totalDistance));
+            
         }
     }
 }

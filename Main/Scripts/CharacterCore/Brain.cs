@@ -9,15 +9,12 @@ public class Brain
 
     public void BrainTick(GameObject charObj)
     {
-        // if we have no activity or it's done, pick a new one
         if (curr_activity == null || curr_activity.IsCompleted)
             SetActivity(charObj);
 
-        // ensure it's started
         if (!curr_activity.isStarted)
             curr_activity.Start();
 
-        // tick the current activity
         curr_activity.Tick(charObj);
     }
 

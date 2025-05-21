@@ -11,11 +11,8 @@ namespace Assets.Main.Scripts.ActivitySystem.Missions.Core
     {
         bool Completed { get; set; }
         bool InProgress { get; set; }
-        bool missionFailed { get; set; }
-
         void StartMission(GameObject charObj);
         bool isMissionCompleted(GameObject charObj);
         void Tick(GameObject charObj);
-        float CheckProgress(GameObject charObj);
     }
 }
